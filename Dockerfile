@@ -12,12 +12,12 @@ RUN apk add --no-cache python3 alpine-sdk git
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prod --frozen-lockfile
 
-# Если Render сделал shallow-клон без .git, создаём фейковый репозиторий.
-# Важно: задаём user.email и user.name, чтобы git commit не ругался.
+# Создаём минимальный git-репозиторий с корректным origin
 RUN if [ ! -d .git ]; then \
       git init . && \
       git config user.email "deploy@render.com" && \
       git config user.name "Render Deploy" && \
+      git remote add origin https://github.com/imputnet/cobalt.git && \
       git add -A && \
       git commit -m "dummy"; \
     fi
